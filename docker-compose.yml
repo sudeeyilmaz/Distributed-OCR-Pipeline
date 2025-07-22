@@ -1,0 +1,77 @@
+version: '3.8'
+
+services:
+  redis:
+    image: redis:7-alpine
+    container_name: ocr_translate_redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+
+  mysql:
+    image: mysql:8
+    container_name: ocr_translate_mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: 1234
+      MYSQL_DATABASE: ocr_db
+      MYSQL_USER: ocr
+      MYSQL_PASSWORD: 1234
+    ports:
+      - "3307:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: ocr_translate_fastapi
+    command: uvicorn ocr_fastapi:app --host 0.0.0.0 --port 8003
+    ports:
+      - "8003:8003"
+    depends_on:
+      - redis
+      - mysql
+    volumes:
+      - ./uploads:/OCR-TRANSLATE/uploads
+      - ./models:/OCR-TRANSLATE/models
+      - .:/OCR-TRANSLATE
+      
+
+  celery_worker:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: ocr_translate_celery_worker
+    command: python3 -m celery -A tasks.celery_app worker --loglevel=info --pool=threads
+    depends_on:
+      - redis
+      - mysql
+      - web
+    environment:
+      - CELERY_BROKER_URL=redis://redis:6379/0
+      - CELERY_RESULT_BACKEND=redis://redis:6379/0
+    volumes:
+      - ./uploads:/OCR-TRANSLATE/uploads
+      - ./models:/OCR-TRANSLATE/models
+      - .:/OCR-TRANSLATE
+      
+
+  flower:
+    image: mher/flower:latest
+    container_name: ocr_translate_flower
+    ports:
+      - "5555:5555"
+    depends_on:
+      - redis
+      - celery_worker
+    environment:
+      - CELERY_BROKER_URL=redis://redis:6379/0
+      - FLOWER_BASIC_AUTH=admin:password123 
+
+volumes:
+  redis_data:
+  uploads_data:
+    driver: local
+  mysql_data:
