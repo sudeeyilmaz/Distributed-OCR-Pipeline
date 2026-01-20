@@ -3,6 +3,7 @@
 ![Python](https://img.shields.io/badge/Python-3.9%2B-blue)
 ![FastAPI](https://img.shields.io/badge/FastAPI-High%20Performance-009688)
 ![Celery](https://img.shields.io/badge/Celery-Async%20Tasks-green)
+![MySQL](https://img.shields.io/badge/MySQL-Database-4479A1)
 ![Docker](https://img.shields.io/badge/Docker-Containerized-2496ED)
 
 A robust, **asynchronous Optical Character Recognition (OCR) microservice** designed to extract text from various media formats. Built with **FastAPI** for the REST interface and **Celery** for handling heavy background processing tasks (like video parsing).
@@ -15,7 +16,7 @@ This project is fully containerized using **Docker**, making it easy to deploy a
 * **🎥 Video OCR:** Processes video files by extracting frames at specified intervals and performing OCR on them asynchronously.
 * **📂 Batch Processing:** Scans entire folders to process multiple media files in the background.
 * **⚡ Asynchronous Architecture:** Uses **Celery** workers to handle long-running tasks without blocking the main API thread.
-* **🔎 Searchable Database:** Extracted text is indexed in a database, allowing users to search for keywords within processed media.
+* **🔎 Searchable Database:** All extracted text and media metadata are indexed in **MySQL**, allowing users to perform complex queries and text searches.
 * **🐳 Docker Ready:** Includes `docker-compose` for one-command orchestration of the API, Workers, and Database.
 
 ## 🛠️ Tech Stack
@@ -25,14 +26,14 @@ This project is fully containerized using **Docker**, making it easy to deploy a
 * **Broker:** Redis (via Docker)
 * **Containerization:** Docker & Docker Compose
 * **OCR Engine:** Tesseract (Integrated in Worker)
-* **Database:** SQL / MongoDB (Abstracted in `ocr_db.py`)
+* **Database:** MySQL (managed via `ocr_db.py`)
 
 ## 📂 Project Structure
 ```
 text
 ├── ocr_fastapi.py      # Main API Gateway (Routes)
 ├── tasks.py            # Celery Worker Tasks (Image/Video Processing)
-├── ocr_db.py           # Database Interactions
+├── ocr_db.py           # MySQL Database Connection & Queries
 ├── ocr_schemas.py      # Pydantic Models for Data Validation
 ├── docker-compose.yml  # Orchestration Config
 ├── Dockerfile          # Container Definition
@@ -42,20 +43,19 @@ text
 Since the project is containerized, the easiest way to run it is via Docker.
 
 **1. Clone the repository**
-Bash
-
 git clone [https://github.com/sudeeyilmaz/Distributed-OCR-Pipeline.git](https://github.com/sudeeyilmaz/Distributed-OCR-Pipeline.git)
 cd Distributed-OCR-Pipeline
+
 **2. Build and Run with Docker**
 docker-compose up --build
 This command starts the FastAPI server, Celery workers, and the Redis broker.
 
 **3. Access the API**
 Once running, the API is accessible at:
-
 API Root: http://localhost:8003
 
 Swagger Documentation: http://localhost:8003/docs
+
 ## 🏗️ How It Works (Architecture)
 **1.** Client sends a request (e.g., upload video) to FastAPI.
 
@@ -63,4 +63,6 @@ Swagger Documentation: http://localhost:8003/docs
 
 **3.** Celery Worker picks up the task, processes the video frame-by-frame using OCR, and saves the text results to the Database.
 
-**4.** Client can poll /task_status to check progress or use /query to search the results once finished.
+**4.**  Data Persistence: The worker connects to MySQL via ocr_db.py to save the extracted text and metadata.
+
+**5.** Client can poll /task_status to check progress or use /query to search the results once finished.
