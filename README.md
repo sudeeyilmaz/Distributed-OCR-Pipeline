@@ -41,28 +41,26 @@ text
 ## ⚙️ Installation & Usage
 Since the project is containerized, the easiest way to run it is via Docker.
 
-1. Clone the repository
+**1. Clone the repository**
 Bash
 
 git clone [https://github.com/sudeeyilmaz/Distributed-OCR-Pipeline.git](https://github.com/sudeeyilmaz/Distributed-OCR-Pipeline.git)
 cd Distributed-OCR-Pipeline
-2. Build and Run with Docker
-Bash
-
+**2. Build and Run with Docker**
 docker-compose up --build
 This command starts the FastAPI server, Celery workers, and the Redis broker.
 
-3. Access the API
+**3. Access the API**
 Once running, the API is accessible at:
 
 API Root: http://localhost:8003
 
 Swagger Documentation: http://localhost:8003/docs
 ## 🏗️ How It Works (Architecture)
-1. Client sends a request (e.g., upload video) to FastAPI.
+**1.** Client sends a request (e.g., upload video) to FastAPI.
 
-2. FastAPI saves the file and pushes a task to the Celery/Redis Queue.
+**2.** FastAPI saves the file and pushes a task to the Celery/Redis Queue.
 
-3. Celery Worker picks up the task, processes the video frame-by-frame using OCR, and saves the text results to the Database.
+**3.** Celery Worker picks up the task, processes the video frame-by-frame using OCR, and saves the text results to the Database.
 
-4. Client can poll /task_status to check progress or use /query to search the results once finished.
+**4.** Client can poll /task_status to check progress or use /query to search the results once finished.
