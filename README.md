@@ -28,7 +28,7 @@ This project is fully containerized using **Docker**, making it easy to deploy a
 * **Database:** SQL / MongoDB (Abstracted in `ocr_db.py`)
 
 ## 📂 Project Structure
-
+```
 text
 ├── ocr_fastapi.py      # Main API Gateway (Routes)
 ├── tasks.py            # Celery Worker Tasks (Image/Video Processing)
@@ -37,6 +37,7 @@ text
 ├── docker-compose.yml  # Orchestration Config
 ├── Dockerfile          # Container Definition
 └── requirements.txt    # Dependencies
+```
 ## ⚙️ Installation & Usage
 Since the project is containerized, the easiest way to run it is via Docker.
 
