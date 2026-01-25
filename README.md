@@ -43,19 +43,22 @@ text
 Since the project is containerized, the easiest way to run it is via Docker.
 
 **1. Clone the repository**
+```bash
 git clone [https://github.com/sudeeyilmaz/Distributed-OCR-Pipeline.git](https://github.com/sudeeyilmaz/Distributed-OCR-Pipeline.git)
 cd Distributed-OCR-Pipeline
-
+```
 **2. Build and Run with Docker**
+```bash
 docker-compose up --build
+```
 This command starts the FastAPI server, Celery workers, and the Redis broker.
 
 **3. Access the API**
 Once running, the API is accessible at:
 API Root: http://localhost:8003
-
+``` bash
 Swagger Documentation: http://localhost:8003/docs
-
+```
 ## 🏗️ How It Works (Architecture)
 **1.** Client sends a request (e.g., upload video) to FastAPI.
 
